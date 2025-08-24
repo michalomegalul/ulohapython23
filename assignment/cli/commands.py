@@ -1,77 +1,73 @@
 import click
-import os
 from datetime import datetime
 from .database import DatabaseManager
 from .file_client import file_client
 
+
 @click.group()
 @click.version_option(version='1.0.0')
 def cli():
-    """Domain Management CLI Tool by michalomegalul"""
+    """Domain Management CLI by michal"""
     pass
+
 
 @cli.command()
 def status():
-    """Check database connection and show statistics"""
-    timestamp = datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
-    click.echo(f"[{timestamp} UTC] Checking system status...")
-    
-    # Show app info
-    click.echo("Author: michalomegalul")
-    click.echo("Version: 1.0.0")
+    """Show database status"""
+    click.echo(f"[{datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')} UTC] Database Status")
+    click.echo("Author: michal")
     
     try:
         db = DatabaseManager()
-        stats = db.get_system_stats()
-
-        click.echo(click.style("Database connection successful", fg='green'))
-        click.echo(f"  Total domains: {stats['total_domains']}")
-        click.echo(f"  Active domains: {stats['active_domains']}")
-        click.echo(f"  Total flags: {stats['total_flags']}")
-        click.echo(f"  Active flags: {stats['active_flags']}")
+        stats = db.get_stats()
+        
+        click.echo("✓ Database connected")
+        click.echo(f"  Domains: {stats['total_domains']} total, {stats['active_domains']} active")
+        click.echo(f"  Flags: {stats['total_flags']} total")
+        
     except Exception as e:
-        click.echo(click.style(f"Database connection failed: {e}", fg='red'))
+        click.echo(f"✗ Database error: {e}")
+
 
 @cli.command()
-def query_active_domains():
-    """Query currently registered domains without active EXPIRED flag"""
-    timestamp = datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
-    click.echo(f"[{timestamp} UTC] Querying active domains...")
-    
+def active_domains():
+    """List active domains (registered, not expired)"""
     try:
         db = DatabaseManager()
         domains = db.get_active_domains()
         
         if domains:
-            click.echo(f"\nFound {len(domains)} active domains:")
+            click.echo(f"Active domains ({len(domains)}):")
             for domain in domains:
-                click.echo(f"  • {domain['fqdn']}")
+                click.echo(f"  {domain}")
         else:
-            click.echo("No active domains found.")
+            click.echo("No active domains found")
+            
     except Exception as e:
-        click.echo(click.style(f"Database error: {e}", fg='red'))
+        click.echo(f"Error: {e}")
+
 
 @cli.command()
-def query_flagged_domains():
-    """Query domains that have had both EXPIRED and OUTZONE flags"""
-    timestamp = datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
-    click.echo(f"[{timestamp} UTC] Querying flagged domains...")
-    
+def flagged_domains():
+    """List domains that had both EXPIRED and OUTZONE flags"""
     try:
         db = DatabaseManager()
         domains = db.get_flagged_domains()
         
         if domains:
-            click.echo(f"\nFound {len(domains)} domains with both flags:")
+            click.echo(f"Flagged domains ({len(domains)}):")
             for domain in domains:
-                click.echo(f"  • {domain['fqdn']}")
+                click.echo(f"  {domain}")
         else:
-            click.echo("No domains found with both flags.")
+            click.echo("No flagged domains found")
+            
     except Exception as e:
-        click.echo(click.style(f"Database error: {e}", fg='red'))
+        click.echo(f"Error: {e}")
 
-# Add the file-client as a subcommand
+
+# Add file-client command
 cli.add_command(file_client, name='file-client')
+
 
 if __name__ == '__main__':
     cli()

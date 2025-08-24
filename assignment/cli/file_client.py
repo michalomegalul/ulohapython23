@@ -1,10 +1,19 @@
 import click
 import requests
 import sys
-import json
-from typing import Optional
+import uuid as uuid_lib
 
-@click.group()
+
+def validate_uuid(uuid_str):
+    """Simple UUID validation"""
+    try:
+        uuid_lib.UUID(uuid_str)
+        return True
+    except ValueError:
+        return False
+
+
+@click.command()
 @click.option('--backend', type=click.Choice(['rest', 'grpc']), default='grpc',
               help='Set a backend to be used, choices are grpc and rest. Default is grpc.')
 @click.option('--grpc-server', default='localhost:50051',
@@ -13,45 +22,38 @@ from typing import Optional
               help='Set a base URL for a REST server. Default is http://localhost/.')
 @click.option('--output', default='-',
               help='Set the file where to store the output. Default is -, i.e. the stdout.')
-@click.pass_context
-def file_client(ctx, backend, grpc_server, base_url, output):
-    """File client for REST/gRPC operations"""
-    # Store options in context for subcommands
-    ctx.ensure_object(dict)
-    ctx.obj['backend'] = backend
-    ctx.obj['grpc_server'] = grpc_server
-    ctx.obj['base_url'] = base_url
-    ctx.obj['output'] = output
-
-@file_client.command()
+@click.argument('command', type=click.Choice(['stat', 'read']))
 @click.argument('uuid')
-@click.pass_context
-def stat(ctx, uuid):
-    """Prints the file metadata in a human-readable manner."""
-    backend = ctx.obj['backend']
+def file_client(backend, grpc_server, base_url, output, command, uuid):
+    """File client for REST/gRPC operations
+    
+    Commands:
+      stat    Prints the file metadata in a human-readable manner.
+      read    Outputs the file content.
+    """
+    
+    # Validate UUID
+    if not validate_uuid(uuid):
+        click.echo("Error: Invalid UUID format", err=True)
+        sys.exit(1)
     
     if backend == 'rest':
-        _stat_rest(uuid, ctx.obj['base_url'], ctx.obj['output'])
-    else:
-        _stat_grpc(uuid, ctx.obj['grpc_server'], ctx.obj['output'])
+        if command == 'stat':
+            stat_rest(uuid, base_url, output)
+        else:  # read
+            read_rest(uuid, base_url, output)
+    else:  # grpc
+        if command == 'stat':
+            stat_grpc(uuid, grpc_server, output)
+        else:  # read
+            read_grpc(uuid, grpc_server, output)
 
-@file_client.command()
-@click.argument('uuid')
-@click.pass_context
-def read(ctx, uuid):
-    """Outputs the file content."""
-    backend = ctx.obj['backend']
-    
-    if backend == 'rest':
-        _read_rest(uuid, ctx.obj['base_url'], ctx.obj['output'])
-    else:
-        _read_grpc(uuid, ctx.obj['grpc_server'], ctx.obj['output'])
 
-def _stat_rest(uuid: str, base_url: str, output: str):
-    """Get file stats via REST API"""
+def stat_rest(uuid, base_url, output):
+    """Get file metadata via REST API"""
     try:
         url = f"{base_url.rstrip('/')}/file/{uuid}/stat/"
-        response = requests.get(url)
+        response = requests.get(url, timeout=30)
         
         if response.status_code == 404:
             click.echo("File not found", err=True)
@@ -60,57 +62,64 @@ def _stat_rest(uuid: str, base_url: str, output: str):
         response.raise_for_status()
         data = response.json()
         
-        # Format metadata in human-readable way
-        output_text = f"""File Metadata:
-  Name: {data.get('name', 'Unknown')}
-  Size: {data.get('size', 0)} bytes
-  MIME Type: {data.get('mimetype', 'Unknown')}
-  Created: {data.get('create_datetime', 'Unknown')}
-"""
+        # Format as human-readable text
+        output_text = f"""Name: {data.get('name', 'Unknown')}
+Size: {data.get('size', 0)} bytes
+MIME Type: {data.get('mimetype', 'Unknown')}
+Created: {data.get('create_datetime', 'Unknown')}"""
         
-        if output == '-':
-            click.echo(output_text.rstrip())
-        else:
-            with open(output, 'w') as f:
-                f.write(output_text)
-                
+        write_output(output_text, output)
+        
     except requests.RequestException as e:
-        click.echo(f"Error connecting to REST API: {e}", err=True)
+        click.echo(f"Error: {e}", err=True)
         sys.exit(1)
 
-def _read_rest(uuid: str, base_url: str, output: str):
+
+def read_rest(uuid, base_url, output):
     """Read file content via REST API"""
     try:
         url = f"{base_url.rstrip('/')}/file/{uuid}/read/"
-        response = requests.get(url)
+        response = requests.get(url, timeout=30)
         
         if response.status_code == 404:
             click.echo("File not found", err=True)
             sys.exit(1)
-            
+        
         response.raise_for_status()
         
         if output == '-':
-            # Output to stdout
-            click.echo(response.text.rstrip())
+            # Output to stdout as text
+            click.echo(response.text)
         else:
-            # Save to file
+            # Save to file as binary to preserve exact content
             with open(output, 'wb') as f:
                 f.write(response.content)
-                
+        
     except requests.RequestException as e:
-        click.echo(f"Error connecting to REST API: {e}", err=True)
+        click.echo(f"Error: {e}", err=True)
         sys.exit(1)
 
-def _stat_grpc(uuid: str, grpc_server: str, output: str):
-    """Get file stats via gRPC (not implemented)"""
-    click.echo("gRPC backend not implemented yet", err=True)
+
+def stat_grpc(uuid, grpc_server, output):
+    """Get file metadata via gRPC (not implemented)"""
+    click.echo("Error: gRPC backend not implemented", err=True)
     sys.exit(1)
 
-def _read_grpc(uuid: str, grpc_server: str, output: str):
+
+def read_grpc(uuid, grpc_server, output):
     """Read file content via gRPC (not implemented)"""
-    click.echo("gRPC backend not implemented yet", err=True)
+    click.echo("Error: gRPC backend not implemented", err=True)
     sys.exit(1)
+
+
+def write_output(content, output_file):
+    """Write content to file or stdout"""
+    if output_file == '-':
+        click.echo(content)
+    else:
+        with open(output_file, 'w') as f:
+            f.write(content)
+
 
 if __name__ == '__main__':
     file_client()

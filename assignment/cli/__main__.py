@@ -1,6 +1,6 @@
-"""CLI entry point for python -m cli.commands"""
-
+# cli.py
+import click
 from cli.commands import cli
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     cli()
