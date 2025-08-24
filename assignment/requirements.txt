@@ -1,0 +1,5 @@
+requests
+click
+pytest
+grpcio
+grpcio-tools
