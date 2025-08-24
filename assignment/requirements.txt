@@ -1,7 +1,4 @@
-requests
-click
-pytest
-grpcio
-grpcio-tools
-psycopg2-binary
-python-dotenv
+click>=8.0.0
+psycopg2-binary>=2.9.0
+requests>=2.28.0
+pytest>=7.0.0
