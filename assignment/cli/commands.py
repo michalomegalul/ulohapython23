@@ -3,14 +3,13 @@ from datetime import datetime
 from .database import DatabaseManager
 from .rest_client import RestAPIClient
 #from .grpc_client import GrpcAPIClient
-
+from .file_client import file_client
 
 @click.group()
 @click.version_option(version='1.0.0')
 def cli():
     """Domain Management CLI Tool"""
     pass
-
 
 @cli.command()
 @click.option('--uuid', required=True, help='UUID to fetch domains data')
@@ -92,6 +91,8 @@ def status():
     click.echo(f"  Total flags: {stats['total_flags']}")
     click.echo(f"  Active flags: {stats['active_flags']}")
 
+# Add file-client as a subcommand
+cli.add_command(file_client, name='file-client')
 
 if __name__ == '__main__':
     cli()

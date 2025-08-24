@@ -114,22 +114,29 @@ class DatabaseManager:
                 """)
                 return cur.fetchall()
     
-    def get_system_stats(self) -> Dict[str, int]:
-        """Get database statistics"""
+    def get_system_stats(self) -> Dict:
+        """Get system statistics"""
         with self.get_connection() as conn:
-            with conn.cursor(cursor_factory=RealDictCursor) as cur:
-                stats = {}
+            with conn.cursor() as cur:
+                # Total domains
+                cur.execute("SELECT COUNT(*) FROM domain")
+                total_domains = cur.fetchone()[0]
                 
-                cur.execute("SELECT COUNT(*) as total FROM domain")
-                stats['total_domains'] = cur.fetchone()['total']
+                # Active domains
+                cur.execute("SELECT COUNT(*) FROM domain WHERE unregistered_at IS NULL")
+                active_domains = cur.fetchone()[0]
                 
-                cur.execute("SELECT COUNT(*) as active FROM domain WHERE unregistered_at IS NULL")
-                stats['active_domains'] = cur.fetchone()['active']
+                # Total flags
+                cur.execute("SELECT COUNT(*) FROM domain_flag")
+                total_flags = cur.fetchone()[0]
                 
-                cur.execute("SELECT COUNT(*) as total FROM domain_flag")
-                stats['total_flags'] = cur.fetchone()['total']
+                # Active flags
+                cur.execute("SELECT COUNT(*) FROM domain_flag WHERE valid_to IS NULL")
+                active_flags = cur.fetchone()[0]
                 
-                cur.execute("SELECT COUNT(*) as active_flags FROM domain_flag WHERE valid_to IS NULL")
-                stats['active_flags'] = cur.fetchone()['active_flags']
-                
-                return stats
+                return {
+                    'total_domains': total_domains,
+                    'active_domains': active_domains,
+                    'total_flags': total_flags,
+                    'active_flags': active_flags
+                }
