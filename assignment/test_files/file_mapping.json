@@ -1,17 +1,17 @@
 {
-  "1559b8e3-a614-4e8e-a3d2-c0e5856f1170": {
+  "56b3c08d-d677-4f5c-9ab9-da8287cca330": {
     "filename": "test.json",
     "filepath": "test_files/test.json",
     "size": 933,
     "mimetype": "application/json"
   },
-  "92dca5f5-154d-41ca-9556-dc0859adda74": {
+  "558e494d-dc5f-44c7-86fd-eb5b0e76fcc7": {
     "filename": "test.csv",
     "filepath": "test_files/test.csv",
     "size": 216,
     "mimetype": "text/csv"
   },
-  "be5e491c-6db6-4bf0-9edb-40ca854526bc": {
+  "d1a34eea-abcd-496a-8108-309f60986daa": {
     "filename": "test.txt",
     "filepath": "test_files/test.txt",
     "size": 93,

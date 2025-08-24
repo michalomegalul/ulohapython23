@@ -24,8 +24,9 @@ def fetch_domains(uuid, api_type):
     if api_type == 'rest':
         api_client = RestAPIClient()
     else:
-        api_client = GrpcAPIClient()
-    
+        #api_client = GrpcAPIClient()
+        click.echo(click.style("gRPC client not implemented yet", err=True, fg='red'))
+        api_client = RestAPIClient()
     # Fetch data from API
     data = api_client.fetch_domains(uuid)
     
