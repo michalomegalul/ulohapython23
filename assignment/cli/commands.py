@@ -21,7 +21,7 @@ def status():
         db = DatabaseManager()
         stats = db.get_stats()
         
-        click.echo("✓ Database connected")
+        click.echo("Database connected")
         click.echo(f"  Domains: {stats['total_domains']} total, {stats['active_domains']} active")
         click.echo(f"  Flags: {stats['total_flags']} total")
         

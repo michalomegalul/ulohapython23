@@ -14,7 +14,7 @@ A comprehensive CLI tool for domain registration management with PostgreSQL back
 - **Advanced Queries** with proper constraint handling
 - **Docker Integration** for easy deployment
 - **CLI Interface** with comprehensive commands
-- 🎲 **Interactive Data Generator** with random domain names
+- **Interactive Data Generator** with random domain names
 
 ## Installation Options
 
