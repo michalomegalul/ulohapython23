@@ -3,3 +3,5 @@ click
 pytest
 grpcio
 grpcio-tools
+psycopg2-binary
+python-dotenv
