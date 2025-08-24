@@ -1,0 +1,20 @@
+{
+  "a298cf45-d308-415a-a60c-510da4d17bb0": {
+    "filename": "test.json",
+    "filepath": "test_files/test.json",
+    "size": 933,
+    "mimetype": "application/json"
+  },
+  "e397080e-a1e2-4b45-9479-42208d776c5a": {
+    "filename": "test.csv",
+    "filepath": "test_files/test.csv",
+    "size": 216,
+    "mimetype": "text/csv"
+  },
+  "5b83e1d2-642e-41b9-b4b5-0568f6f9996f": {
+    "filename": "test.txt",
+    "filepath": "test_files/test.txt",
+    "size": 93,
+    "mimetype": "text/plain"
+  }
+}

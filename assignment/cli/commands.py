@@ -2,7 +2,7 @@ import click
 from datetime import datetime
 from .database import DatabaseManager
 from .rest_client import RestAPIClient
-from .grpc_client import GrpcAPIClient
+#from .grpc_client import GrpcAPIClient
 
 
 @click.group()
@@ -31,16 +31,16 @@ def fetch_domains(uuid, api_type):
     data = api_client.fetch_domains(uuid)
     
     if not data:
-        click.echo("No data received from API", fg='red')
+        click.echo(click.style("No data received from API", fg='red'))
         return
-    
-    click.echo(f" Data received from {data['source']}", fg='green')
-    
+
+    click.echo(click.style(f" Data received from {data['source']}", fg='green'))
+
     # Store in database
     db = DatabaseManager()
     stored_count = db.store_domains(data)
-    
-    click.echo(f" Fetch completed - stored {stored_count} new domains", fg='green')
+
+    click.echo(click.style(f" Fetch completed - stored {stored_count} new domains", fg='green'))
 
 
 @cli.command()
@@ -85,8 +85,8 @@ def status():
     
     db = DatabaseManager()
     stats = db.get_system_stats()
-    
-    click.echo("Database connection successful", fg='green')
+
+    click.echo(click.style("Database connection successful", fg='green'))
     click.echo(f"  Total domains: {stats['total_domains']}")
     click.echo(f"  Active domains: {stats['active_domains']}")
     click.echo(f"  Total flags: {stats['total_flags']}")

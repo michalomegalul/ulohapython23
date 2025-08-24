@@ -19,8 +19,8 @@ class RestAPIClient:
         self.base_url = os.getenv('API_BASE_URL')
         
         if not self.base_url:
-            click.echo("Error: API_BASE_URL environment variable not set", err=True, fg='red')
-            click.echo("Please check your .env file", err=True, fg='red')
+            click.echo(click.style("Error: API_BASE_URL environment variable not set", err=True, fg='red'))
+            click.echo(click.style("Please check your .env file", err=True, fg='red'))
 
         self.session = requests.Session()
         self.session.headers.update({
@@ -69,15 +69,15 @@ class RestAPIClient:
             response.raise_for_status()
             metadata = response.json()
             
-            click.echo(f"    File found: {metadata.get('name', 'Unknown')}", fg='green')
-            click.echo(f"    Size: {metadata.get('size', 0)} bytes")
-            click.echo(f"    MIME: {metadata.get('mimetype', 'Unknown')}")
-            click.echo(f"    Created: {metadata.get('create_datetime', 'Unknown')}")
+            click.echo(click.style(f"    File found: {metadata.get('name', 'Unknown')}", fg='green'))
+            click.echo(click.style(f"    Size: {metadata.get('size', 0)} bytes", fg='green'))
+            click.echo(click.style(f"    MIME: {metadata.get('mimetype', 'Unknown')}", fg='green'))
+            click.echo(click.style(f"    Created: {metadata.get('create_datetime', 'Unknown')}", fg='green'))
             
             return metadata
             
         except requests.RequestException as e:
-            click.echo(f"  REST API request failed: {e}", err=True, fg='red')
+            click.echo(click.style(f"  REST API request failed: {e}", err=True, fg='red'))
             return None
     
     def download_file_content(self, uuid_str: str) -> Optional[str]:
@@ -97,13 +97,13 @@ class RestAPIClient:
             filename = self._extract_filename(response.headers.get('Content-Disposition', ''))
             content_type = response.headers.get('Content-Type', 'application/octet-stream')
 
-            click.echo(f"  Content-Type: {content_type}", fg='green')
-            click.echo(f"  Filename: {filename}", fg='green')
+            click.echo(click.style(f"  Content-Type: {content_type}", fg='green'))
+            click.echo(click.style(f"  Filename: {filename}", fg='green'))
 
             return response.content.decode('utf-8', errors='ignore')
                 
         except requests.RequestException as e:
-            click.echo(f"  REST API request failed: {e}", err=True, fg='red')
+            click.echo(click.style(f"  REST API request failed: {e}", err=True, fg='red'))
             return None
     
     def _extract_filename(self, content_disposition: str) -> str:

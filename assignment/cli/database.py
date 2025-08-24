@@ -12,7 +12,7 @@ class DatabaseManager:
     def __init__(self):
         self.db_url = os.getenv('DATABASE_URL')
         if not self.db_url:
-            click.echo("DATABASE_URL not set in .env file", err=True, fg='red')
+            click.echo(click.style("DATABASE_URL not set in .env file", err=True, fg='red'))
             sys.exit(1)
 
     def get_connection(self):
@@ -20,7 +20,7 @@ class DatabaseManager:
         try:
             return psycopg2.connect(self.db_url)
         except psycopg2.Error as e:
-            click.echo(f"Database connection error: {e}", err=True)
+            click.echo(click.style(f"Database connection error: {e}", err=True, fg='red'))
             sys.exit(1)
     
     def store_domains(self, domains_data: Dict[str, Any]) -> int:
@@ -40,14 +40,14 @@ class DatabaseManager:
                         """, domain)
                         
                         if cur.rowcount > 0:
-                            click.echo(f"Stored domain: {domain['fqdn']}", fg='green')
+                            click.echo(click.style(f"Stored domain: {domain['fqdn']}", fg='green'))
                             stored_count += 1
                         else:
-                            click.echo(f"Already exists: {domain['fqdn']}", fg='red')
+                            click.echo(click.style(f"Already exists: {domain['fqdn']}", fg='red'))
 
                     except psycopg2.Error as e:
-                        click.echo(f"Error storing {domain['fqdn']}: {e}", err=True,  fg='red')
-                
+                        click.echo(click.style(f"Error storing {domain['fqdn']}: {e}", err=True, fg='red'))
+
                 # Store flags
                 for flag_data in domains_data.get('flags', []):
                     try:
@@ -72,10 +72,10 @@ class DatabaseManager:
                             ))
                             
                             if cur.rowcount > 0:
-                                click.echo(f"Stored flag: {flag_data['flag']} for {flag_data['domain_fqdn']}", fg='green')
+                                click.echo(click.style(f"Stored flag: {flag_data['flag']} for {flag_data['domain_fqdn']}", fg='green'))
 
                     except psycopg2.Error as e:
-                        click.echo(f"Error storing flag: {e}", err=True, fg='red')
+                        click.echo(click.style(f"Error storing flag: {e}", err=True, fg='red'))
 
                 conn.commit()
         

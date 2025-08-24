@@ -1,8 +1,8 @@
 CREATE TABLE domain (
     id SERIAL PRIMARY KEY, --serial increment number
     fqdn VARCHAR(255) NOT NULL,
-    regisered_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(), 
-    unregisttered_at TIMESTAMP WITH TIME ZONE,
+    registered_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(), 
+    unregistered_at TIMESTAMP WITH TIME ZONE,
     created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
 
@@ -38,7 +38,7 @@ CREATE TABLE domain_flag (
     CONSTRAINT domain_flag_flag_not_empty CHECK (LENGTH(TRIM(flag)) > 0),
     CONSTRAINT domain_flag_validity_order CHECK (
         valid_to IS NULL OR valid_to > valid_from
-    )
+    ),
     --for valid flag values
     CONSTRAINT domain_flag_valid_types CHECK (
         flag IN ('EXPIRED', 'OUTZONE', 'DELETE_CANDIDATE')
