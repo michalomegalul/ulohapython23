@@ -1,7 +1,7 @@
 import os
 import psycopg2
 import logging
-from cli.errors import handle_error
+from .errors import handle_error
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')

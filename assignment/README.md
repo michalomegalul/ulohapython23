@@ -95,20 +95,18 @@ python cli.py file-client --output /tmp/metadata.txt stat 123e4567-e89b-12d3-a45
 - **`stat`** - Prints file metadata
 - **`read`** - Outputs file content
 
-## Domain Management Usage
-
-```bash
-# Check system status
+# Domain management commands
 python cli.py status
-
-#Active domains (registered, not expired)
 python cli.py active-domains
-
-#Fagged domains (had both EXPIRED and OUTZONE flags)
 python cli.py flagged-domains
 
-# Enable logging
-python cli.py --verbose status
+# File client commands (matching assignment requirements exactly)
+python cli.py file-client --help
+python cli.py file-client stat UUID
+python cli.py file-client read UUID
+python cli.py file-client --backend=rest stat UUID
+python cli.py file-client --base-url=http://example.com/ stat UUID
+python cli.py file-client --output=output.txt read UUID
 ```
 
 ## Database Schema

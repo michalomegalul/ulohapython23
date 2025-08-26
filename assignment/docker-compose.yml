@@ -1,4 +1,3 @@
-
 services:
   db:
     image: postgres:13
@@ -11,7 +10,6 @@ services:
       - "5432:5432"
     volumes:
       - ./sql/schema.sql:/docker-entrypoint-initdb.d/1_schema.sql
-      - ./sql/seed.sql:/docker-entrypoint-initdb.d/2_seed.sql
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U user -d domains"]
       interval: 5s
@@ -28,4 +26,4 @@ services:
     depends_on:
       db:
         condition: service_healthy
-    command: ["python", "init_db.py"]
+    command: ["tail", "-f", "/dev/null"]

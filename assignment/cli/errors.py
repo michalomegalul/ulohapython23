@@ -1,11 +1,11 @@
-import click
-import logging
 import sys
+import logging
+import click
 
 logger = logging.getLogger(__name__)
 
-def handle_error(message: str, exit_code: int = 1):
-    """Log error and exit"""
+def handle_error(message, exit_code=1):
+    """Handle errors with logging and exit"""
     logger.error(message)
     click.echo(f"Error: {message}", err=True)
     sys.exit(exit_code)
